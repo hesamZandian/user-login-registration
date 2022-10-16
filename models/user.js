@@ -1,35 +1,13 @@
-const mongoose = require("mongoose")
-const bcrypt = require("bcrypt")
-
-const validEmail = (email) => {
-        const regEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        return regEx.test(email)
-}
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-        name: {
-            type: String,
-            required: true
-        },
-        email: {
-            type: String,
-            required: true,
-            validate: [validEmail, 'pls enter valid email address']
-        },
-        password: {
-            type:String,
-            required: true,
-        }
-})
+    first_name: { type: String, default: "" },
+    last_name: { type: String, default: "" },
+    username: { type: String, default: "" },
+    email: { type: String, default: "" },
+    phone_number: { type: String, default: "" },
+    password: { type: String },
+    token: { type: String }
+}, { timestamps: true });
 
-// generating a hash
-userSchema.methods.generateHash = function (password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-};
-
-// check if password is valid or invalid
-userSchema.methods.validPassword = function (password) {
-    return bcrypt.compareSync(password, this.password);
-};
-
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model("users", userSchema);

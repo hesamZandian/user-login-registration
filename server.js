@@ -1,29 +1,23 @@
-const express = require('express')
-const app = express()
-const port = 3000
-const userRoutes = require("./routes/routes")
-const bodyParser = require("body-parser")
+const dotenv = require("dotenv");
+const http = require("http");
+const express = require("express");
+const db = require("./config/database");
+const routes = require("./routes/routes");
+const app = express();
+dotenv.config();
 
-// mongoDB connection
-const mongoose = require('mongoose')
-const URL = 'mongodb://user:user123@ds119650.mlab.com:19650/sam_db'
-mongoose.connect(URL, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
-mongoose.Promise = global.Promise
-const db = mongoose.connection
-db.on('open', () => {
-    console.log("connected")
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const server = http.createServer(app);
 
 
+db.connect();
 
-const bodyParserJSON = bodyParser.json()
-const bodyParserURLEncoded = bodyParser.urlencoded({ extended: false })
+// routes
+app.use("/api", routes);
 
-// configure app.use()
-app.use(bodyParserJSON)
-app.use(bodyParserURLEncoded)
-app.use('/users', userRoutes)
+server.listen(process.env.PORT, () => {
+  console.log("running on port: ", process.env.PORT);
+});
 
-app.listen(port,() =>{
-    console.log(`server running on port ${port}`)
-})
